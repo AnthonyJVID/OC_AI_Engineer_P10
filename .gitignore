@@ -1,4 +1,12 @@
 ############# ENVIRONNEMENTS VIRTUELS #############
+# --- ENV Windows placé en racine du repo ---
+Lib/
+Scripts/
+Include/
+etc/
+share/
+pyvenv.cfg
+
 # racine et sous‑dossiers
 .venv*/
 .vscode/
