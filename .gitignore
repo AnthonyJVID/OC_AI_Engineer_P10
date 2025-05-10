@@ -1,0 +1,19 @@
+# ignorer la partie interne de l'environnement virtuel
+Lib/
+Scripts/
+etc/
+share/
+Include/
+pyvenv.cfg
+
+# caches Python et notebooks
+__pycache__/
+*.ipynb_checkpoints/
+
+# données brutes éventuelles
+data/
+*.csv
+
+# (si vous ne voulez PAS versionner les .pkl/.npz)
+# azure_function/model/*.pkl
+# azure_function/model/*.npz
