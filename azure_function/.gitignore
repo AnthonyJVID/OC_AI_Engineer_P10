@@ -1,0 +1,73 @@
+##############################
+# Azure Functions – artefacts #
+##############################
+
+# Dossiers de build / IDE
+bin/
+obj/
+.vs/
+
+# Fichiers générés par le runtime Functions local
+csx/
+edge/
+Publish/
+
+# Paramètres VS Code (créés par `func init`)
+.vscode/
+
+# Fichiers utilisateur / état IDE
+*.user
+*.suo
+
+# Config & secrets Azure  ➜  ne jamais pousser
+*.cscfg
+appsettings.json
+local.settings.json
+.secrets/
+secrets/
+
+# Azurite (émulateur Storage)
+__blobstorage__/
+__queuestorage__/
+__azurite_db*__.json
+
+# NuGet / .NET (templates C# éventuels)
+project.lock.json
+/packages/
+tools/NuGet.exe
+
+# Résultats de tests
+TestResults/
+
+# NodeJS (si fonctions JavaScript)
+node_modules/
+dist/
+
+########################
+# Python Function v4+  #
+########################
+# Dépendances locales installées par Core Tools
+.python_packages/
+
+# Environnements virtuels
+.env
+.venv
+.venv*/
+env*/
+venv*/
+ENV*/
+env.bak/
+venv.bak/
+
+# Fichiers compilés Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+#########################
+# Données & modèles (✱) #
+#########################
+data/
+# Dé‑commente ces lignes si TU NE VEUX PAS versionner les artefacts :
+# model/*.pkl
+# model/*.npz
