@@ -1,19 +1,39 @@
-# ignorer la partie interne de l'environnement virtuel
-Lib/
-Scripts/
-etc/
-share/
-Include/
-pyvenv.cfg
+############# ENVIRONNEMENTS VIRTUELS #############
+# racine et sous‑dossiers
+.venv*/
+.vscode/
 
-# caches Python et notebooks
+############# BUILD / CACHES PYTHON ###############
 __pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
 *.ipynb_checkpoints/
 
-# données brutes éventuelles
+############# DONNÉES & SORTIES  ###################
 data/
 *.csv
+*.tsv
+*.parquet
+*.xlsx
 
-# (si vous ne voulez PAS versionner les .pkl/.npz)
+############# AZURE FUNCTION (fichiers locaux) ####
+# dossiers générés au build local
+azure_function/.python_packages/
+azure_function/.venv*/
+azure_function/bin/
+azure_function/obj/
+
+# réglages IDE spécifiques
+azure_function/.vscode/
+
+# artefacts lourds → gardés côté modèle si besoin,
+# mais ignorés ici pour éviter le versioning accidentel
+# (décommente si tu veux aussi ignorer les modèles)
 # azure_function/model/*.pkl
 # azure_function/model/*.npz
+
+############# WINDOWS / MISC ######################
+Thumbs.db
+.DS_Store
