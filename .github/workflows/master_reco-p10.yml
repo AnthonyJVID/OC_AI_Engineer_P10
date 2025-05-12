@@ -1,4 +1,3 @@
-# .github/workflows/master_reco-p10.yml
 name: Build & Deploy – Azure Function reco-p10
 
 on:
@@ -8,36 +7,31 @@ on:
 
 env:
   PYTHON_VERSION: '3.10'
-  APP_DIR: 'azure_function'   # dossier racine de votre Function App
+  APP_PATH: 'azure_function'
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-
+    permissions: { contents: read }
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Setup Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v5
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
+        with: { python-version: ${{ env.PYTHON_VERSION }} }
 
-      - name: Install dependencies
+      - name: Install deps
         run: |
           python -m pip install --upgrade pip
-          pip install -r ${{ env.APP_DIR }}/requirements.txt
+          pip install -r ${{ env.APP_PATH }}/requirements.txt
 
-      - name: Package Function App
+      - name: Zip function app
+        working-directory: ${{ env.APP_PATH }}
         run: |
-          cd ${{ env.APP_DIR }}
           zip -r ../function.zip . \
-            -x "venv/**" "__pycache__/**"
+            -x "__pycache__/**" "venv/**"
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: function-package
           path: function.zip
@@ -48,14 +42,11 @@ jobs:
     permissions:
       id-token: write
       contents: read
-
     steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: function-package
+      - uses: actions/download-artifact@v4
+        with: { name: function-package }
 
-      - name: Login to Azure
+      - name: Login Azure (OIDC)
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_085B4AA212A640A09423F47D7B323905 }}
@@ -65,5 +56,5 @@ jobs:
       - name: Deploy to Azure Functions
         uses: Azure/functions-action@v1
         with:
-          app-name: 'reco-p10'
-          package: 'function.zip'
+          app-name:  'reco-p10'
+          package:   function.zip
