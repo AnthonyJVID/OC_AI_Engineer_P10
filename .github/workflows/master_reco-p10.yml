@@ -3,8 +3,7 @@ name: Build & Deploy – Azure Function reco-p10
 
 on:
   push:
-    branches:
-      - master
+    branches: [ master ]
   workflow_dispatch:
 
 env:
