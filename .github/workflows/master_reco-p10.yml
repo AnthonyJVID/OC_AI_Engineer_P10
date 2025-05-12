@@ -18,7 +18,7 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: './azure_function' # set this to the path to your web app project, defaults to the repository root
+  APP_PATH: 'azure_function' # set this to the path to your web app project, defaults to the repository root
   PYTHON_VERSION: '3.10' # set this to the python version to use (supports 3.6, 3.7, 3.8)
 
 jobs:
@@ -80,10 +80,10 @@ jobs:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
-          name: python-app
+          name: function_package
 
-      - name: Unzip artifact for deployment
-        run: unzip release.zip     
+#      - name: Unzip artifact for deployment
+#        run: unzip release.zip     
         
       - name: Login to Azure
         uses: azure/login@v2
@@ -97,6 +97,6 @@ jobs:
         id: deploy-to-function
         with:
           app-name: 'reco-p10'
+          slot-name: 'Production'
           package:   release.zip
-#          slot-name: 'Production'
 #          package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
