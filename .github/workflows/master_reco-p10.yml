@@ -1,102 +1,75 @@
-# Build and deploy Python project to Azure Function App - reco-p10
-# ===============================================================
-# • Ne déploie que le dossier azure_function (où se trouvent host.json, function_app.py, etc.)
-# • Installe ses dépendances depuis azure_function/requirements.txt
-# • Utilise Python 3.10
-# • Authentification Azure : secrets créés par le portail (Publish profile → “Deploy to GitHub Actions”)
-
-# Docs for the Azure Web Apps Deploy action: https://github.com/azure/functions-action
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-# More info on Python, GitHub Actions, and Azure Functions: https://aka.ms/python-webapps-actions
-
-name: Build and deploy Python project to Azure Function App - reco-p10
+name: Build & Deploy – Azure Function reco‑p10
 
 on:
   push:
-    branches:
-      - master
+    branches: [ master ]
   workflow_dispatch:
 
 env:
-  APP_PATH: 'azure_function' # set this to the path to your web app project, defaults to the repository root
-  PYTHON_VERSION: '3.10' # set this to the python version to use (supports 3.6, 3.7, 3.8)
+  PYTHON_VERSION: '3.10'        # runtime choisi dans la Function App
+  APP_PATH: 'azure_function'    # dossier qui contient host.json + code
 
+# ───────────────────────────────────────────────────────────────
+# 1) BUILD  ➜  produit function.zip
+# ───────────────────────────────────────────────────────────────
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read #This is required for actions/checkout
+    permissions: { contents: read }
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Python version
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
-      - name: Create and start virtual environment
-        run: |
-          python -m venv venv
-          source venv/bin/activate
-
-      - name: Install dependencies
+      - name: Install deps (optionnel – tests/lint)
         run: |
           python -m pip install --upgrade pip
-          pip install -r azure_function/requirements.txt
+          pip install -r ${{ env.APP_PATH }}/requirements.txt
 
-      # Optional: Add step to run tests here
+      # (insère ici tes tests unitaires éventuels)
 
-#      - name: Zip artifact for deployment
-#        run: zip release.zip ./* -r
-#
-#      - name: Upload artifact for deployment job
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: python-app
-#          path: |
-#            release.zip
-#            !venv/
-
-      - name: Create deployment archive
+      - name: Créer l’archive de déploiement
         run: |
-          cd ${AZURE_FUNCTIONAPP_PACKAGE_PATH}
-          zip -r ../release.zip . -x "venv/**" "__pycache__/**"
+          zip -r function.zip ${{ env.APP_PATH }} \
+              -x "**/__pycache__/**" "**/venv/**"
 
-      - uses: actions/upload-artifact@v4
+      - name: Publier l’artefact
+        uses: actions/upload-artifact@v4
         with:
-          name: python-app
-          path: release.zip
+          name: function-package
+          path: function.zip
 
+# ───────────────────────────────────────────────────────────────
+# 2) DEPLOY  ➜  envoie function.zip dans la Function App
+# ───────────────────────────────────────────────────────────────
   deploy:
     runs-on: ubuntu-latest
     needs: build
     permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
+      id-token: write   # OIDC / RBAC
+      contents: read
 
     steps:
-      - name: Download artifact from build job
+      - name: Récupérer l’archive
         uses: actions/download-artifact@v4
         with:
-          name: function_package
+          name: function-package
 
-#      - name: Unzip artifact for deployment
-#        run: unzip release.zip     
-        
-      - name: Login to Azure
+      - name: Login Azure (OIDC)
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_085B4AA212A640A09423F47D7B323905 }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_7044A94E284E48A783BF711B11BDC35C }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_3E66DFBFAB21471CABDB49E2B80AEF48 }}
 
-      - name: 'Deploy to Azure Functions'
+      - name: Déployer vers Azure Functions
         uses: Azure/functions-action@v1
-        id: deploy-to-function
         with:
-          app-name: 'reco-p10'
+          app-name:  'reco-p10'          # nom exact de la Function App
           slot-name: 'Production'
-          package:   release.zip
-#          package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+          package:   function.zip        # le zip extrait juste au‑dessus
