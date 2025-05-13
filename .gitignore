@@ -21,10 +21,13 @@ __pycache__/
 
 ############# DONNÉES & SORTIES  ###################
 data/
+app/
 *.csv
 *.tsv
 *.parquet
 *.xlsx
+*.docx
+*.pptx
 
 ############# AZURE FUNCTION (fichiers locaux) ####
 # dossiers générés au build local
