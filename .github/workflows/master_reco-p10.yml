@@ -12,13 +12,14 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions: { contents: read }
+    permissions:
+      contents: read
 
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Python
+      - name: Setup Python ${{ env.PYTHON_VERSION }}
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
@@ -28,13 +29,14 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r ${{ env.APP_PATH }}/requirements.txt
 
-      - name: Package function
+      - name: Create deployment package
+        # on se place DANS azure_function pour zipper son contenu
         working-directory: ${{ env.APP_PATH }}
         run: |
           zip -r ../function.zip . \
             -x "__pycache__/**" "venv/**"
 
-      - name: Upload artifact
+      - name: Upload package
         uses: actions/upload-artifact@v4
         with:
           name: function-package
@@ -48,7 +50,7 @@ jobs:
       contents: read
 
     steps:
-      - name: Download artifact
+      - name: Download package
         uses: actions/download-artifact@v4
         with:
           name: function-package
@@ -60,7 +62,7 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_7044A94E284E48A783BF711B11BDC35C }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_3E66DFBFAB21471CABDB49E2B80AEF48 }}
 
-      - name: Deploy to Azure Functions
+      - name: Deploy to Function App
         uses: Azure/functions-action@v1
         with:
           app-name: 'reco-p10'
