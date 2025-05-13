@@ -6,7 +6,28 @@ import joblib
 import scipy.sparse as sp
 from pathlib import Path
 
-from fonctions import recommander_implicit   # ton module utils
+def recommander_implicit(user_id, interaction_df, model, user_map, item_map, interaction_matrix, top_n=5):
+    """
+    Recommande les top_n articles à un utilisateur avec le modèle ALS.
+    """
+    if user_id not in user_map:
+        return []
+
+    user_idx = user_map[user_id]
+    reverse_item_map = {v: k for k, v in item_map.items()}
+
+    user_items = interaction_matrix[user_idx]
+
+    # Recommandation (structure renvoyée : tableau NumPy, pas forcément une liste de tuples)
+    recommended = model.recommend(user_idx, user_items, N=top_n, filter_already_liked_items=True)
+
+    # Extraction manuelle
+    results = []
+    for row in recommended:
+        item_id = int(row[0])
+        results.append(reverse_item_map[item_id])
+
+    return results
 
 # ────────────────────────────────────────────────────────────────
 # Chargement des artefacts (fait une seule fois au cold‑start)
