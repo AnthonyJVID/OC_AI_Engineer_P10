@@ -18,6 +18,8 @@ Publish/
 # Fichiers utilisateur / état IDE
 *.user
 *.suo
+*.docx
+*.pptx
 
 # Config & secrets Azure  ➜  ne jamais pousser
 *.cscfg
