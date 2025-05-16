@@ -119,8 +119,7 @@ Le modèle, les mappings et la matrice CSR sont stockés dans `azure_function/mo
 
 ## 🧠 Auteur
 
-Projet réalisé par **AnthonyJVID**, dans le cadre du parcours *Engineer IA* chez OpenClassrooms.  
-Ce dépôt illustre un projet complet de bout-en-bout de système de recommandation.
+Projet réalisé par **AnthonyJVID**, dans le cadre du parcours *Engineer IA* chez OpenClassrooms.
 
 ---
 
